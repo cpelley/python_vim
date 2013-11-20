@@ -6,6 +6,10 @@ setlocal fo-=t   " don't automatically wrap text when typing
 " define plugin script location for relative executing
 let s:path = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 
+" syntax highlight from the very beginning of the file (required due to large
+" docstrings)
+autocmd BufEnter * :syntax sync fromstart
+
 " Colour column at 80char
 if exists('+colorcolumn')
   setlocal colorcolumn=80
