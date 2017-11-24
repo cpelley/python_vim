@@ -12,15 +12,15 @@ autocmd BufEnter * :syntax sync fromstart
 
 " Colour column at 80char
 if exists('+colorcolumn')
-  setlocal colorcolumn=80
+  setlocal colorcolumn=79
 else
-  autocmd BufWinEnter * let w:m2=matchadd('ErrorMsg', '\%>80v.\+', -1)
+  autocmd BufWinEnter * let w:m2=matchadd('ErrorMsg', '\%>79v.\+', -1)
 endif
 highlight ColorColumn ctermbg=241
 
-" Highlight when over line length
-highlight OverLength ctermbg=red ctermfg=white guibg=#592929
-match OverLength /\%80v.\+/
+"" Highlight when over line length
+"highlight OverLength ctermbg=red ctermfg=white guibg=#592929
+"match OverLength /\%80v.\+/
 
 " Remove trailing whitespace on save
 "autocmd BufWritePre * :%s/\s\+$//e
@@ -40,19 +40,29 @@ setlocal foldlevel=99
 setlocal foldnestmax=2
 
 " Run python
-command Runpython execute "!python %"
-command Runpythonint execute "!python -i %"
+command! Runpython execute "!python2.7 %"
+command! Runpythonint execute "!python2.7 -i %"
 
 " Settings for jedi-vim
 " " cd ~/.vim/bundle
-" " git clone git://github.com/davidhalter/jedi-vim.git
+" " git clone --recursive https://github.com/davidhalter/jedi-vim.git ~/.vim/bundle/jedi-vim
+"
+" Add the virtualenv's site-packages to vim path (for jedi-vim)
+if has('python')
+py << EOF
+import site
+site.addsitedir('/home/h05/cpelley/.local/lib/python2.7/site-packages')
+site.addsitedir('/project/atk/_dev/environments/latest/lib/python2.7/site-packages')
+EOF
+endif
+
 let g:jedi#popup_on_dot = 0 "no automatic popup
 let g:jedi#show_call_signatures = "1" "arguments of function, does slow completion down
 
 " shortcut for inserting ipdb debug
-map <Leader>b Oimport ipdb; ipdb.set_trace()<ESC>
+map <Leader>b Oimport pdb; pdb.set_trace()<ESC>
 " remove
-map <leader>bd :g/import ipdb; ipdb.set_trace()/d<ESC>:nohl<CR>
+map <leader>bd :g/import pdb; pdb.set_trace()/d<ESC>:nohl<CR>
 
 " automatically adjust quickfix window height
 function! AdjustWindowHeight(minheight, maxheight)
@@ -61,32 +71,37 @@ endfunction
 
 
 " monkeypatched pyflakes for consistent interp.
-command Pyflakes :call Pyflakes()
+command! Pyflakes :call Pyflakes()
 function! Pyflakes()
     cclose
     exe "setlocal makeprg=" . s:path . "/../bin/pyflake_parsed.py\\ %"
     silent make|redraw!
-    au FileType qf call AdjustWindowHeight(3, 10)
+    au FileType qf call AdjustWindowHeight(10, 10)
     cw
     cfirst
 endfunction
 
-command Pep8 :call Pep8()
+command! Pep8 :call Pep8()
 function! Pep8()
     cclose
     setlocal makeprg=pep8\ --repeat\ %
     silent make|redraw!
-    au FileType qf call AdjustWindowHeight(3, 10)
+    au FileType qf call AdjustWindowHeight(10, 10)
     cw
     cfirst
 endfunction
 
-command Browse :call Browse()
+command! Browse :call Browse()
 function! Browse()
     cclose
     exe "setlocal makeprg=" . s:path . "/../bin/python_class_browser.py\\ %" 
     silent make|redraw!
-    au FileType qf call AdjustWindowHeight(3, 20)
+    au FileType qf call AdjustWindowHeight(10, 20)
     cw
     cfirst
+endfunction
+
+command! -nargs=1 Comment :call Comment(<f-args>)
+function! Comment(tcom)
+    :silent execute ":!" s:path . "/../bin/inline_code_comment.py" expand('%') line('.') a:tcom ">>" . expand('%') . ".comment" | redraw!
 endfunction

@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 """
 Monkeypatch for pyflakes to produce a syntax error consistent with the
 formatting of other error types.
 
 """
-# Copyright (c) 2013 Carwyn Pelley
+# Copyright (c) 2013 - 2017 Carwyn Pelley
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +23,6 @@ formatting of other error types.
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-
-import sys
 import pyflakes.reporter as reporter
 from pyflakes.scripts.pyflakes import main
 
@@ -34,10 +32,11 @@ def vimhappy_syntaxError(self, filename, msg, lineno, offset, text):
     line = text.splitlines()[-1]
     if offset is not None:
         offset = offset - (len(text) - len(line))
-    self._stderr.write(reporter.u('%s:%d:%d: %s\n') % (filename, lineno,
-                       offset + 1, msg))
+    self._stderr.write(reporter.u('%s:%d:%d: %s\n' %
+                                  (filename.split('/')[-1],
+                                   lineno, offset + 1, msg)))
 
 
 if __name__ == '__main__':
     reporter.Reporter.syntaxError = vimhappy_syntaxError
-    main(sys.argv[1:])
+    main()

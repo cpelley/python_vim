@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 """
 Function-Class-Method browser for python files.
 
 """
-# Copyright (c) 2013 Carwyn Pelley
+# Copyright (c) 2013 - 2017 Carwyn Pelley
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,6 @@ Function-Class-Method browser for python files.
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-
 import sys
 import re
 
@@ -33,8 +32,10 @@ def main(fnme):
 
     parsed = []
     for ind, line in enumerate(lines):
-        pattern = '^[\s]*def\s|'
-        if re.match(r'{0}def|{0}class'.format(pattern), line):
+        pattern = ['^[\s]*{}\s'.format(ident) for ident in
+                   ['cdef', 'cpdef', 'def', 'class']]
+        pattern = '|'.join(pattern)
+        if re.match(pattern, line):
             print_line = line.replace('\n', '')
             print_line = print_line.replace(':', '')
             print_line = "{}:{}:'{}'".format(fnme, ind + 1, print_line)
