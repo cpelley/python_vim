@@ -11,7 +11,7 @@ Copyright and licence
 
 MIT License (MIT)
 
-Copyright (c) 2013 Carwyn Pelley
+Copyright (c) 2013 - 2017 Carwyn Pelley
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
